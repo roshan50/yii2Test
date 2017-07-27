@@ -16,8 +16,10 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
+//            'class' => 'app\components\User',
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'enableSession' => true,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -41,18 +43,25 @@ $config = [
         'db' => $db,
         //.......mary add these................
         'urlManager' => [
-            // 'enablePrettyUrl' => true,
-            // 'enableStrictParsing' => true,
-            // 'showScriptName' => false,
-            // 'rules' => [
-            //    ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
-            // ],
+             'enablePrettyUrl' => true,
+             'enableStrictParsing' => true,
+             'showScriptName' => false,
+             'rules' => [
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+                 'post' => 'post/index',
+                 'post/<id:\d+>' => 'post/view',
+                 'dashboard' => 'dashboard/index',
+                 '/' => 'site/index',
+                 'site' => 'site/index',
+                 'site/login' => 'site/login',
+                 'site/contact' => 'site/contact',
+             ],
          ],
-        //  'request' => [
-        //     'parsers' => [
-        //        'application/json' => 'yii\web\JsonParser',
-        //     ]
-        //  ],
+          'request' => [
+             'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+             ]
+          ],
          //............................
     ],
     'params' => $params,

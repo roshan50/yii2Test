@@ -71,18 +71,40 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
+//        if (!Yii::$app->user->isGuest) {
+//            return $this->goHome();
+//        }
+//
+//        $model = new LoginForm();
+//        if (isset($_POST['LoginForm'])) {
+//            $model->attributes = $_POST['LoginForm'];
+//            if ($model->load(Yii::$app->request->post()) && $model->login()) {
+//                return $this->goBack();
+//            }
+//            return $this->render('login', [
+//                'model' => $model,
+//            ]);
+//        }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+
+        if (isset($_POST['LoginForm'])) {
+            $model->attributes = $_POST['LoginForm'];
+            // validate user input and redirect to previous page if valid
+            if ($model->validate($model->attributes) && $model->login()) {
+                $user = Yii::$app->user->identity;
+//                $user = Yii::app()->user->getId();
+                print_r($user);
+                return $this->redirect(['dashboard/index', ['userIdentity' => $user]]);
+//                return $this->goBack();//$this->redirect(\Yii::app()->user->returnUrl);
+            }
         }
+        // display the login form
         return $this->render('login', [
             'model' => $model,
         ]);
     }
+
 
     /**
      * Logout action.
@@ -110,6 +132,16 @@ class SiteController extends Controller
             return $this->refresh();
         }
         return $this->render('contact', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionUserForm(){
+        $model = new UserForm;
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+
+        }
+        return $this->render('userForm', [
             'model' => $model,
         ]);
     }

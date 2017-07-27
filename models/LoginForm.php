@@ -59,10 +59,11 @@ class LoginForm extends Model
      */
     public function login()
     {
-        if ($this->validate()) {
+        //if ($this->validate()) {
+
             return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
-        }
-        return false;
+       // }
+        // return false;
     }
 
     /**
@@ -78,4 +79,41 @@ class LoginForm extends Model
 
         return $this->_user;
     }
+
+    //I add this function according to http://www.larryullman.com/
+    //Simple%20Authentication%20with%20the%20Yii%20Framework%20_%20Larry%20Ullman.htm
+
+    public function authenticate($attribute,$params)
+    {
+        if (!$this->hasErrors())  // we only want to authenticate when no input errors
+        {
+            $identity = new UserIdentity($this->username, $this->password);
+            $identity->authenticate2();
+            switch ($identity->errorCode){
+                case UserIdentity::ERROR_NONE:
+                    $duration=$this->rememberMe ? 3600*24*30 : 0; // 30 days
+                    Yii::app()->user->login($identity,$duration);
+                    break;
+                case UserIdentity::ERROR_USERNAME_INVALID:
+                    $this->addError('username','Username is incorrect.');
+                    break;
+                default: // UserIdentity::ERROR_PASSWORD_INVALID
+                    $this->addError('password','Password is incorrect.');
+                    break;
+            }
+        }
+    }
+
+
+//    public function authenticate2(){
+//        $user = User::model()->findByAttributes(array('username'=>$this->username));
+//        if ($user===null) { // No user found!
+//            $this->errorCode=self::ERROR_USERNAME_INVALID;
+//        } else if ($user->pass !== SHA1($this->password) ) { // Invalid password!
+//            $this->errorCode=self::ERROR_PASSWORD_INVALID;
+//        } else { // Okay!
+//            $this->errorCode=self::ERROR_NONE;
+//        }
+//        return !$this->errorCode;
+//    }
 }
